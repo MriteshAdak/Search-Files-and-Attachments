@@ -7,7 +7,7 @@
  * @version 1.0.0
  */
 
-public with sharing class QueryFilterDto {
+public inherited sharing class QueryFilterDto {
     /**
      * @description The API name of the field to filter on
      */

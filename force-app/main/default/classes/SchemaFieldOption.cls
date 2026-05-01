@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-public with sharing class SchemaFieldOption {
+public inherited sharing class SchemaFieldOption {
     /**
      * @description The user-friendly display label for the field (e.g., "Account Name")
      */
