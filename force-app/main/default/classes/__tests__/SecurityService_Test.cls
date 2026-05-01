@@ -121,6 +121,48 @@ private class SecurityService_Test {
         System.assertEquals('Name', nameField.value, 'Value should be API name');
         System.assertNotEquals(null, nameField.label, 'Label should not be null');
         System.assert(nameField.label.length() > 0, 'Label should not be empty');
+        System.assertEquals(FieldTypeMetadata.TYPE_TEXT, nameField.fieldType, 'Name should be a TEXT field');
+        System.assert(nameField.validOperators.contains('LIKE'), 'TEXT fields should allow LIKE operator');
+        System.assertEquals(true, nameField.isRequired, 'Name should be required');
+        System.assertEquals(true, nameField.isUpdateable, 'Name should be updateable');
+    }
+
+    @isTest
+    static void testGetAccessibleFieldOptions_PicklistValues() {
+        Test.startTest();
+        List<SchemaFieldOption> options = SecurityService.getAccessibleFieldOptions('Account');
+        Test.stopTest();
+
+        SchemaFieldOption picklistField = null;
+        for (SchemaFieldOption opt : options) {
+            if (opt.fieldType == FieldTypeMetadata.TYPE_PICKLIST) {
+                picklistField = opt;
+                break;
+            }
+        }
+
+        System.assertNotEquals(null, picklistField, 'Should include at least one picklist field');
+        System.assertNotEquals(null, picklistField.picklistValues, 'Picklist values should be initialized');
+        System.assert(picklistField.picklistValues.size() > 0, 'Picklist fields should include values');
+    }
+
+    @isTest
+    static void testGetAccessibleFieldOptions_ReferenceOperators() {
+        Test.startTest();
+        List<SchemaFieldOption> options = SecurityService.getAccessibleFieldOptions('Account');
+        Test.stopTest();
+
+        SchemaFieldOption referenceField = null;
+        for (SchemaFieldOption opt : options) {
+            if (opt.fieldType == FieldTypeMetadata.TYPE_REFERENCE) {
+                referenceField = opt;
+                break;
+            }
+        }
+
+        System.assertNotEquals(null, referenceField, 'Should include at least one reference field');
+        System.assert(!referenceField.validOperators.contains('LIKE'), 'REFERENCE fields should not allow LIKE');
+        System.assert(referenceField.validOperators.contains('IN'), 'REFERENCE fields should allow IN');
     }
 
     @isTest
@@ -182,11 +224,11 @@ private class SecurityService_Test {
         // Verify at least one field has both label and value
         Boolean foundValidOption = false;
         for (SchemaFieldOption opt : options) {
-            if (String.isNotBlank(opt.label) && String.isNotBlank(opt.value)) {
+            if (String.isNotBlank(opt.label) && String.isNotBlank(opt.value) && String.isNotBlank(opt.fieldType)) {
                 foundValidOption = true;
                 break;
             }
         }
-        System.assert(foundValidOption, 'At least one option should have valid label and value');
+        System.assert(foundValidOption, 'At least one option should have valid label, value, and fieldType');
     }
 }

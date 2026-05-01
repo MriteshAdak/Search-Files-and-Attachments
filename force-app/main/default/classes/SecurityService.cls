@@ -59,10 +59,11 @@ public with sharing class SecurityService {
     }
 
     /**
-     * @description Retrieves a sorted list of field options (label + API name) for a given SObject
-     *              that the current user has access to view. Returns SchemaFieldOption DTOs.
+     * @description Retrieves a sorted list of field options for a given SObject
+     *              that the current user has access to view. Returns SchemaFieldOption DTOs
+     *              with normalized field type, operators, and picklist values when applicable.
      * @param objectName The API name of the SObject.
-     * @return A List of SchemaFieldOption objects containing label and value (API name) pairs.
+     * @return A List of SchemaFieldOption objects containing field metadata.
      */
     @AuraEnabled(cacheable=true)
     public static List<SchemaFieldOption> getAccessibleFieldOptions(String objectName) {
@@ -81,11 +82,30 @@ public with sharing class SecurityService {
         for (Schema.SObjectField field : fieldMap.values()) {
             Schema.DescribeFieldResult describe = field.getDescribe();
             if (describe.isAccessible()) {
-                // Create DTO with label (for display) and API name (for queries)
+                String normalizedType = FieldTypeMetadata.normalizeFieldType(describe.getType());
                 SchemaFieldOption option = new SchemaFieldOption(
-                    describe.getLabel(),  
-                    describe.getName()    
+                    describe.getLabel(),
+                    describe.getName(),
+                    normalizedType
                 );
+                option.isRequired = !describe.isNillable();
+                option.isUpdateable = describe.isUpdateable();
+                option.validOperators = FieldTypeMetadata.getValidOperators(normalizedType);
+
+                if (normalizedType == FieldTypeMetadata.TYPE_PICKLIST ||
+                    normalizedType == FieldTypeMetadata.TYPE_MULTIPICKLIST) {
+                    for (Schema.PicklistEntry entry : describe.getPicklistValues()) {
+                        if (entry.isActive()) {
+                            option.picklistValues.add(
+                                new SchemaFieldOption.PicklistValue(
+                                    entry.getLabel(),
+                                    entry.getValue(),
+                                    entry.isDefaultValue()
+                                )
+                            );
+                        }
+                    }
+                }
                 fieldOptions.add(option);
             }
         }
