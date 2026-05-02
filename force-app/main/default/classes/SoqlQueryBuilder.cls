@@ -44,19 +44,6 @@ public with sharing class SoqlQueryBuilder {
         return query;
     }
 
-    /**
-     * @description Helper to append WITH SECURITY_ENFORCED when the query is compatible.
-     *
-     * @param query The complete SOQL query string
-     * @return Query string with WITH SECURITY_ENFORCED appended when compatible; original otherwise
-     */
-    public static String applySecurityEnforcementIfCompatible(String query) {
-        if (isCompatibleWithSecurityEnforced(query)) {
-            return query + ' WITH SECURITY_ENFORCED';
-        }
-        return query;
-    }
-
         /**
      * @description Helper to append WITH SECURITY_ENFORCED when the query is compatible.
      *
