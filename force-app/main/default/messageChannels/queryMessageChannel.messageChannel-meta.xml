@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Query Message Channel</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Communication channel for query execution lifecycle events between query builder and results components</description>
+    <lightningMessageFields>
+        <fieldName>eventType</fieldName>
+        <description>Type of event: queryStarted, querySuccess, queryError, queryCancelled</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>requestId</fieldName>
+        <description>Unique identifier for the query request</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>timestamp</fieldName>
+        <description>ISO 8601 timestamp when event occurred</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>results</fieldName>
+        <description>Query results (SObject records) for success events</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>error</fieldName>
+        <description>Error message for error events</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>query</fieldName>
+        <description>Query metadata: object, fields, filters, limit</description>
+    </lightningMessageFields>
+</LightningMessageChannel>
