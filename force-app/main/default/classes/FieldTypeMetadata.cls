@@ -65,22 +65,22 @@ public with sharing class FieldTypeMetadata {
         }
 
         switch on normalizedType {
-            when TYPE_TEXT {
+            when 'TEXT' {
                 return new List<String>{'=', '!=', 'LIKE', 'IN', 'NOT IN'};
             }
-            when TYPE_REFERENCE {
+            when 'REFERENCE' {
                 return new List<String>{'=', '!=', 'IN', 'NOT IN'};
             }
-            when TYPE_NUMBER, TYPE_DATE, TYPE_DATETIME {
+            when 'NUMBER', 'DATE', 'DATETIME' {
                 return new List<String>{'=', '!=', '<', '<=', '>', '>='};
             }
-            when TYPE_BOOLEAN {
+            when 'BOOLEAN' {
                 return new List<String>{'=', '!='};
             }
-            when TYPE_PICKLIST {
+            when 'PICKLIST' {
                 return new List<String>{'=', '!=', 'IN', 'NOT IN'};
             }
-            when TYPE_MULTIPICKLIST {
+            when 'MULTIPICKLIST' {
                 return new List<String>{'INCLUDES', 'EXCLUDES'};
             }
             when else {
