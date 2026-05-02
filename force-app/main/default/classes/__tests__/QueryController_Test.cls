@@ -59,6 +59,15 @@ private class QueryController_Test {
     }
 
     @IsTest
+    static void test_getObjectFieldOptions_invalidObject_returnsEmptyList() {
+        Test.startTest();
+        List<SchemaFieldOption> opts = QueryController.getObjectFieldOptions('InvalidObject__c');
+        Test.stopTest();
+
+        System.assertEquals(0, opts.size(), 'Invalid object should return empty options list');
+    }
+
+    @IsTest
     static void test_executeQuery_success_byNameEquals() {
         List<String> fields = new List<String>{ 'Name', 'Id', 'ParentId' };
         List<QueryFilterDto> filters = new List<QueryFilterDto>();
@@ -197,5 +206,39 @@ private class QueryController_Test {
         System.assertNotEquals(null, results, 'Should return non-null list');
         System.assert(results.size() <= 10, 'Should respect limit');
         System.assert(results.size() > 0, 'Should return some rows');
+    }
+
+    @IsTest
+    static void test_executeQuery_stripInaccessibleReturnsRecords() {
+        Test.startTest();
+        List<SObject> results = QueryController.executeQuery(
+            'Attachment',
+            new List<String>{ 'Name', 'Id' },
+            null,
+            10
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(null, results, 'Results should not be null');
+    }
+
+    @IsTest
+    static void test_executeQuery_invalidField_throwsSecurityError() {
+        try {
+            Test.startTest();
+            QueryController.executeQuery(
+                'Attachment',
+                new List<String>{ 'InvalidField__c' },
+                null,
+                10
+            );
+            Test.stopTest();
+            System.assert(false, 'Expected query to fail for invalid field');
+        } catch (Exception e) {
+            System.assert(
+                e.getMessage().contains('Access denied or invalid field') || e.getMessage().contains('Validation Error'),
+                'Expected a security or validation error'
+            );
+        }
     }
 }
