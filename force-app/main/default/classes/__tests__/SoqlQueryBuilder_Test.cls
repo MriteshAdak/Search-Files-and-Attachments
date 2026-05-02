@@ -17,7 +17,7 @@ private class SoqlQueryBuilder_Test {
         Integer limitVal = 10;
         
         Test.startTest();
-        String query = SoqlQueryBuilder.build(objectName, fields, filters, limitVal);
+        String query = SoqlQueryBuilder.buildQuery(objectName, fields, filters, limitVal);
         Test.stopTest();
         
         System.assert(query.contains('SELECT'), 'Should contain SELECT');
@@ -40,7 +40,7 @@ private class SoqlQueryBuilder_Test {
         filters.add(f1);
         
         Test.startTest();
-        String query = SoqlQueryBuilder.build(objectName, fields, filters, limitVal);
+        String query = SoqlQueryBuilder.buildQuery(objectName, fields, filters, limitVal);
         Test.stopTest();
         
         System.assert(query.contains('WHERE'), 'Should contain WHERE clause');
@@ -49,7 +49,7 @@ private class SoqlQueryBuilder_Test {
 
     @isTest
     static void testAllowedOperators_Constant() {
-        Set<String> operators = SoqlQueryBuilder.ALLOWED_OPERATORS;
+        Set<String> operators = Utils.ALLOWED_OPERATORS;
 
         // Verify expected operators are present
         System.assert(operators.contains('='), 'Should contain =');
@@ -72,9 +72,6 @@ private class SoqlQueryBuilder_Test {
         System.assert(!operators.contains('UPDATE'), 'Should not contain UPDATE');
         System.assert(!operators.contains('INSERT'), 'Should not contain INSERT');
 
-        // Backward compatibility: SoqlQueryBuilder exposes alias from Utils.
-        System.assertEquals(Utils.ALLOWED_OPERATORS, operators,
-            'SoqlQueryBuilder.ALLOWED_OPERATORS should alias Utils.ALLOWED_OPERATORS');
     }
     
     @isTest
@@ -121,14 +118,14 @@ private class SoqlQueryBuilder_Test {
     
     @isTest
     static void testBuild_BackwardCompatibility() {
-        // Test that old build() method still works
+        // Test buildQuery() with a single filter
         QueryFilterDto filter = new QueryFilterDto();
         filter.fieldName = 'Name';
         filter.operator = '=';
         filter.value = 'test';
         
         Test.startTest();
-        String query = SoqlQueryBuilder.build('Account', 
+        String query = SoqlQueryBuilder.buildQuery('Account', 
             new List<String>{'Name'}, 
             new List<QueryFilterDto>{filter}, 10);
         Test.stopTest();
