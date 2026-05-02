@@ -87,8 +87,22 @@ public with sharing class QueryController {
                 'Query constructed: Query=' + query + 
                 ', User=' + UserInfo.getUserId());
 
-            // Security.stripInaccessible() is being considerd for future enhancements.
-            return Database.query(query);
+            // Execute query
+            List<SObject> results = Database.query(query);
+            
+            // SECURITY: Strip inaccessible fields - ENABLED
+            SObjectAccessDecision decision = Security.stripInaccessible(
+                AccessType.READABLE,
+                results
+            );
+            
+            List<SObject> filteredResults = decision.getRecords();
+            
+            System.debug(LoggingLevel.FINE,
+                'Query executed successfully: ResultCount=' + filteredResults.size() +
+                ', RemovedFields=' + decision.getRemovedFields().keySet());
+            
+            return filteredResults;
 
         } catch (IllegalArgumentException iae) {
             throw new AuraHandledException('Validation Error: ' + iae.getMessage());
