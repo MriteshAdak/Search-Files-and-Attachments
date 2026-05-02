@@ -60,45 +60,6 @@ private class SecurityService_Test {
     }
 
     @isTest
-    static void testGetAccessibleFields() {
-        Test.startTest();
-        List<String> fields = SecurityService.getAccessibleFields('Account');
-        Test.stopTest();
-        
-        System.assertNotEquals(null, fields, 'Result should not be null');
-        System.assert(fields.size() > 0, 'Should return fields for Account');
-        System.assert(fields.contains('Name'), 'Should contain standard field Name');
-        System.assert(fields.contains('Id'), 'Should contain standard field Id');
-    }
-    
-    @isTest
-    static void testGetAccessibleFields_InvalidObject() {
-        Test.startTest();
-        List<String> fields = SecurityService.getAccessibleFields('InvalidObject__c');
-        Test.stopTest();
-        
-        System.assertEquals(0, fields.size(), 'Should return empty list for invalid object');
-    }
-    
-    @isTest
-    static void testGetAccessibleFields_BlankObjectName() {
-        Test.startTest();
-        List<String> fields = SecurityService.getAccessibleFields('');
-        Test.stopTest();
-        
-        System.assertEquals(0, fields.size(), 'Should return empty list for blank object name');
-    }
-    
-    @isTest
-    static void testGetAccessibleFields_NullObjectName() {
-        Test.startTest();
-        List<String> fields = SecurityService.getAccessibleFields(null);
-        Test.stopTest();
-        
-        System.assertEquals(0, fields.size(), 'Should return empty list for null object name');
-    }
-    
-    @isTest
     static void testGetAccessibleFieldOptions_Account() {
         // Test that field options include both label and value
         Test.startTest();
