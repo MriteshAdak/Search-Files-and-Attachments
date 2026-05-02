@@ -1,13 +1,16 @@
 <template>
 	<lightning-card title="Search Files and Attachments" icon-name="standard:file">
 		<div class="slds-var-p-around_medium">
-			<c-query-data
-				onquerysubmit={handleQuerySubmit}
-				onquerycancel={handleQueryCancel}
-			></c-query-data>
-
-			<div class="slds-var-m-top_large">
-				<c-query-results></c-query-results>
+			<div class="slds-grid slds-gutters slds-wrap">
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2">
+					<c-query-data
+						onquerysubmit={handleQuerySubmit}
+						onquerycancel={handleQueryCancel}
+					></c-query-data>
+				</div>
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2">
+					<c-query-results></c-query-results>
+				</div>
 			</div>
 		</div>
 	</lightning-card>
