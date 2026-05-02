@@ -1,0 +1,340 @@
+<template>
+  <lightning-card title="Query Builder" icon-name="standard:search">
+    <div class="slds-var-p-around_medium">
+      <lightning-combobox
+        name="object"
+        label="Select Object"
+        value={selectedObject}
+        options={objectOptions}
+        data-control="object-selector"
+        onchange={handleObjectChange}
+        required
+        message-when-value-missing="Select an object to query."
+        disabled={isLoadingFields}
+      >
+      </lightning-combobox>
+
+      <div class="slds-var-m-top_small">
+        <template if:true={isLoadingFields}>
+          <lightning-spinner
+            alternative-text="Loading fields..."
+            size="small"
+          ></lightning-spinner>
+          <p class="slds-text-color_weak slds-var-m-top_x-small">
+            Loading fields for {selectedObject}...
+          </p>
+        </template>
+
+        <template if:false={isLoadingFields}>
+          <template if:true={hasFieldOptionsError}>
+            <div class="slds-text-color_error">
+              <lightning-icon
+                icon-name="utility:error"
+                size="small"
+                variant="error"
+              ></lightning-icon>
+              Failed to load fields. Please try again.
+            </div>
+          </template>
+
+          <template if:false={hasFieldOptionsError}>
+            <lightning-dual-listbox
+              name="fields"
+              label="Select Fields"
+              source-label="Available Fields"
+              selected-label="Selected Fields"
+              options={fieldOptions}
+              value={selectedFields}
+              data-control="field-selector"
+              onchange={handleFieldChange}
+              required
+              message-when-value-missing="Select at least one field."
+            >
+            </lightning-dual-listbox>
+          </template>
+        </template>
+      </div>
+
+        <div class="slds-grid">
+          <div class="slds-var-m-top_small slds-text-color_weak">
+            <p>Filter by field values</p>
+          </div>
+          <div class="slds-col_bump-left">
+            <lightning-button
+              label="Add Condition"
+              icon-name="utility:add"
+              onclick={handleAddFilter}
+              disabled={isLoadingFields}
+            >
+            </lightning-button>
+          </div>
+        </div>
+
+        <template if:true={filters.length}>
+          <div class="slds-var-m-top_small">
+            <template for:each={filters} for:item="filter">
+              <div
+                key={filter.id}
+                class="slds-grid slds-gutters slds-var-m-bottom_small slds-grid_vertical-align-end"
+              >
+                <div class="slds-col slds-size_3-of-12">
+                  <lightning-combobox
+                    label="Field"
+                    value={filter.fieldName}
+                    options={fieldOptions}
+                    data-id={filter.id}
+                    data-name="fieldName"
+                    data-control="filter-field"
+                    onchange={handleFilterFieldChange}
+                    required
+                    message-when-value-missing="Select a field for this condition."
+                    disabled={isLoadingFields}
+                  >
+                  </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_3-of-12">
+                  <lightning-combobox
+                    label="Operator"
+                    value={filter.operator}
+                    options={filter.validOperatorOptions}
+                    data-id={filter.id}
+                    data-name="operator"
+                    data-control="filter-operator"
+                    onchange={handleFilterOperatorChange}
+                    required
+                    message-when-value-missing="Select an operator for this condition."
+                    disabled={isLoadingFields}
+                  >
+                  </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_5-of-12">
+                  <template if:true={filter.renderConfig.showTextInput}>
+                    <lightning-input
+                      label="Value"
+                      type="text"
+                      value={filter.value}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterValueChange}
+                      placeholder={filter.valuePlaceholder}
+                      required
+                      message-when-value-missing="Enter a value."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-input>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showNumberInput}>
+                    <lightning-input
+                      label="Value"
+                      type="number"
+                      step="any"
+                      value={filter.value}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterValueChange}
+                      required
+                      message-when-value-missing="Enter a number."
+                      message-when-type-mismatch="Must be a valid number."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-input>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showDateInput}>
+                    <lightning-input
+                      label="Value"
+                      type="date"
+                      max="2099-12-31"
+                      value={filter.value}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterValueChange}
+                      required
+                      message-when-value-missing="Select a date."
+                      message-when-range-overflow="Date must be before 2100."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-input>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showDateTimeInput}>
+                    <lightning-input
+                      label="Value"
+                      type="datetime"
+                      value={filter.value}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterValueChange}
+                      required
+                      message-when-value-missing="Select a date and time."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-input>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showBooleanInput}>
+                    <lightning-input
+                      label="Value"
+                      type="checkbox"
+                      checked={filter.value}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterCheckboxChange}
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-input>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showPicklistCombobox}>
+                    <lightning-combobox
+                      label="Value"
+                      value={filter.value}
+                      options={filter.picklistOptions}
+                      data-id={filter.id}
+                      data-name="value"
+                      data-control="filter-value"
+                      onchange={handleFilterValueChange}
+                      required
+                      message-when-value-missing="Select a value."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-combobox>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showMultiPicklistCheckboxes}>
+                    <lightning-checkbox-group
+                      label="Values"
+                      value={filter.valueItems}
+                      options={filter.picklistOptions}
+                      data-id={filter.id}
+                      data-control="filter-multivalue-input"
+                      onchange={handleFilterCheckboxGroupChange}
+                      required
+                      message-when-value-missing="Select at least one value."
+                      disabled={isLoadingFields}
+                    >
+                    </lightning-checkbox-group>
+                  </template>
+
+                  <template if:true={filter.renderConfig.showMultiValuePills}>
+                    <div class={filter.multiValueFormElementClass}>
+                      <label class="slds-form-element__label" for={filter.pillInputId}>
+                        <abbr class="slds-required" title="required">*</abbr>
+                        Values
+                      </label>
+                      <div class="slds-form-element__control">
+                        <div class="slds-pill_container slds-var-m-bottom_xx-small">
+                          <template for:each={filter.valueItems} for:item="item">
+                            <span key={item} class="slds-pill">
+                              <span class="slds-pill__label">{item}</span>
+                              <button
+                                class="slds-button slds-button_icon slds-pill__remove"
+                                type="button"
+                                data-id={filter.id}
+                                data-value={item}
+                                onclick={handleRemovePill}
+                                disabled={isLoadingFields}
+                              >
+                                <lightning-icon
+                                  icon-name="utility:close"
+                                  size="x-small"
+                                  alternative-text="Remove"
+                                ></lightning-icon>
+                              </button>
+                            </span>
+                          </template>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_xx-small">
+                          <div class="slds-col">
+                            <input
+                              type="text"
+                              id={filter.pillInputId}
+                              class="slds-input"
+                              data-id={filter.id}
+                              data-control="filter-multivalue-input"
+                              value={filter.currentInputValue}
+                              oninput={handlePillInputChange}
+                              onkeydown={handlePillInputKeydown}
+                              onblur={handlePillInputBlur}
+                              placeholder="Enter value and press Enter"
+                              aria-describedby={filter.pillErrorHelpId}
+                              disabled={isLoadingFields}
+                            />
+                          </div>
+                          <div class="slds-col slds-grow-none">
+                            <lightning-button
+                              label="Add"
+                              data-id={filter.id}
+                              onclick={handleAddPill}
+                              disabled={isLoadingFields}
+                            ></lightning-button>
+                          </div>
+                        </div>
+                      </div>
+                      <template if:true={filter.pillContainerHasError}>
+                        <div id={filter.pillErrorHelpId} class="slds-form-element__help">
+                          {filter.pillContainerErrorMessage}
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+
+                <div class="slds-col slds-size_1-of-12">
+                  <lightning-button-icon
+                    icon-name="utility:delete"
+                    variant="border-filled"
+                    alternative-text="Remove condition"
+                    data-id={filter.id}
+                    onclick={handleRemoveFilter}
+                    disabled={isLoadingFields}
+                  >
+                  </lightning-button-icon>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <template if:false={filters.length}>
+          <div class="slds-var-m-top_small slds-text-color_weak">
+            <p>No conditions added. Click "Add Condition" to filter results.</p>
+          </div>
+        </template>
+      </div>
+
+      <lightning-input
+        type="number"
+        name="limit"
+        label="Limit"
+        value={limitValue}
+        onchange={handleLimitChange}
+        min="1"
+        max="2000"
+        class="slds-var-m-top_small"
+        disabled={isLoadingFields}
+      >
+      </lightning-input>
+
+      <div class="slds-var-m-top_medium">
+        <lightning-button
+          id="execute-query-button"
+          variant="brand"
+          label="Execute Query"
+          onclick={handleRunQuery}
+          disabled={isLoadingFields}
+        >
+        </lightning-button>
+      </div>
+    </div>
+  </lightning-card>
+</template>
