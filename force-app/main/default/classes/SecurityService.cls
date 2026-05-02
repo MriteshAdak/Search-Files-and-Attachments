@@ -20,8 +20,8 @@ public with sharing class SecurityService {
     public static void validateReadAccess(String objectName, List<String> fields) {
 
         System.debug(
-            LoggingLevel.FINE, 'Validation check initiated by: ' 
-            + new DmlException().getStackTraceString().split('\n')[1]
+            LoggingLevel.FINE,
+            'Security validation initiated by: ' + UserInfo.getUserId()
         );
 
         if(String.isBlank(objectName) || fields == null || fields.isEmpty()) {
