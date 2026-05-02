@@ -1,0 +1,125 @@
+<template>
+	<lightning-card title="Query Results" icon-name="standard:report">
+		<div slot="title">
+			<div class="slds-media slds-media_center">
+				<div class="slds-media__figure">
+					<lightning-icon icon-name="standard:report" size="small"></lightning-icon>
+				</div>
+				<div class="slds-media__body">
+					<h2 class="slds-card__header-title">
+						<span>Query Results</span>
+						<template if:true={hasResults}>
+							<lightning-badge
+								label={resultSummary}
+								class="slds-var-m-left_small"
+							></lightning-badge>
+						</template>
+					</h2>
+				</div>
+			</div>
+		</div>
+
+		<div slot="actions">
+			<lightning-button
+				label="Export CSV"
+				icon-name="utility:download"
+				onclick={handleExportCSV}
+				disabled={exportButtonDisabled}
+				title="Export results to CSV file"
+			></lightning-button>
+		</div>
+
+		<div class="slds-var-p-around_medium">
+			<template if:true={isLoading}>
+				<div class="slds-align_absolute-center slds-var-p-vertical_xx-large">
+					<div class="slds-text-align_center">
+						<lightning-spinner
+							alternative-text="Executing query..."
+							size="medium"
+							variant="brand"
+						></lightning-spinner>
+						<p class="slds-var-m-top_medium slds-text-color_weak">
+							Executing query...
+						</p>
+					</div>
+				</div>
+			</template>
+
+			<template if:true={hasError}>
+				<div class="slds-box slds-theme_error slds-var-m-bottom_small">
+					<div class="slds-media">
+						<div class="slds-media__figure">
+							<lightning-icon
+								icon-name="utility:error"
+								size="small"
+								variant="error"
+							></lightning-icon>
+						</div>
+						<div class="slds-media__body">
+							<h3 class="slds-text-heading_small slds-var-m-bottom_x-small">
+								Query Error
+							</h3>
+							<p class="slds-text-body_regular">{error}</p>
+						</div>
+					</div>
+				</div>
+			</template>
+
+			<template if:true={hasResults}>
+				<div class="results-container">
+					<lightning-datatable
+						key-field="Id"
+						data={results}
+						columns={columns}
+						hide-checkbox-column
+						show-row-number-column
+						onrowaction={handleRowAction}
+						default-sort-direction="asc"
+						sorted-direction="asc"
+						resize-column-disabled
+						min-column-width="100"
+						max-column-width="400"
+					></lightning-datatable>
+				</div>
+			</template>
+
+			<template if:true={showNoResultsMessage}>
+				<div class="slds-align_absolute-center slds-var-p-vertical_xx-large">
+					<div class="slds-text-align_center">
+						<lightning-icon
+							icon-name="utility:warning"
+							size="large"
+							variant="warning"
+							class="slds-var-m-bottom_medium"
+						></lightning-icon>
+						<h3 class="slds-text-heading_small slds-var-m-bottom_x-small">
+							No Records Found
+						</h3>
+						<p class="slds-text-color_weak">
+							The query returned no results. Try adjusting your filters.
+						</p>
+					</div>
+				</div>
+			</template>
+
+			<template if:true={showEmptyState}>
+				<div class="slds-align_absolute-center slds-var-p-vertical_xx-large">
+					<div class="slds-text-align_center">
+						<lightning-icon
+							icon-name="utility:search"
+							size="large"
+							variant="bare"
+							class="slds-var-m-bottom_medium"
+						></lightning-icon>
+						<h3 class="slds-text-heading_small slds-var-m-bottom_x-small">
+							No Results Yet
+						</h3>
+						<p class="slds-text-color_weak">
+							Run a query above to see results here
+						</p>
+					</div>
+				</div>
+			</template>
+		</div>
+	</lightning-card>
+</template>

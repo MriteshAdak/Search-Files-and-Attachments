@@ -1,0 +1,25 @@
+.results-container {
+	max-height: 600px;
+	overflow: auto;
+}
+
+.results-container lightning-datatable {
+	width: 100%;
+}
+
+.slds-align_absolute-center lightning-icon {
+	opacity: 0.7;
+}
+
+.slds-align_absolute-center {
+	animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
