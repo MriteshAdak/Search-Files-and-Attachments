@@ -2,12 +2,27 @@
   "packageDirectories": [
     {
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "SearchFilesAndAttachments",
+      "versionName": "ver 1.0",
+      "versionNumber": "1.0.0.NEXT"
+    },
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": false,
+      "package": "SearchFilesAttachments",
+      "versionDescription": "A Lightning Web Component application for searching and querying Salesforce files, attachments, and content across standard and custom objects with dynamic field selection and filtering capabilities."
     }
   ],
   "name": "Search-Files-and-Attachments",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "66.0",
-  "defaultLwcLanguage": "javascript"
+  "defaultLwcLanguage": "javascript",
+  "packageAliases": {
+    "SearchFilesAndAttachments": "",
+    "SearchFilesAttachments": "0HoWU0000002AuX0AU"
+  }
 }
