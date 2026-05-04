@@ -52,9 +52,8 @@ public with sharing class SecurityService {
         
         // Log successful validation for audit trail
         System.debug(
-            LoggingLevel.FINE, 'Security validation passed: Object=' 
-            + objectName + ', User=' + UserInfo.getUserId() 
-            + ', Fields=' + String.join(fields, ',')
+            LoggingLevel.FINE, 'Security validation passed: Object=' + objectName 
+            + ', User=' + UserInfo.getUserId() + ', Fields=' + String.join(fields, ',')
         );
     }
 
