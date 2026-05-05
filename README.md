@@ -1,6 +1,6 @@
 # Search Files & Attachments
 
-A Salesforce Lightning Web Component app for querying Files and Attachments directly from the platform. Users can choose the object, select fields, add filters, and run secure dynamic queries from a single tab in Salesforce.
+A Salesforce Lightning Web Component app for querying Files and Attachments directly from the platform. Users can choose the object, select fields, add filters, and run secure dynamic queries from a single tab in Salesforce. Build using Agentforce, and hence, the code is currently "in review". The generated code was checked (by me) throughout the creation phase (was segmented into 8 phases) but a comprehensive review is in the works. This README will be updated with the progress.
 
 ## Table of Contents
 
